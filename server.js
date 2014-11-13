@@ -50,3 +50,7 @@ function delete_User(email) {
     stmt.run(email);
 }
 
+function calculate_new_pairing(){
+    
+}
+
