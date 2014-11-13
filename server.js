@@ -2,8 +2,6 @@
 var sqlite3 = require('sqlite3').verbose();
 var db = new sqlite3.Database('Users', createTable);
 
-insertRows()
-var data2;
 values = db.all("select * from users;", function(err, data) {
         console.log(data); 
         data2 = data;
@@ -13,9 +11,20 @@ var http = require('http');
 var fs = require('fs');
 
 http.createServer(function (req, res) {
-  res.writeHead(200, {'Content-Type': 'text/plain'});
-  res.end(data2.toString());
-  console.log(req)
+
+    if (req.method == 'POST') {
+        var body = '';
+        req.on('data', function (data) {
+            var json = JSON.parse(data.toString())
+            console.log(json);
+        });
+        res.writeHead(200, {'Content-Type': 'text/plain'});
+        res.end("Post Request");
+    }
+    else{
+      res.writeHead(200, {'Content-Type': 'text/plain'});
+      res.end("Get Request");
+    }
 }).listen(9615);
 
 
@@ -27,8 +36,5 @@ function createTable() {
 function insertRows(first_name, last_name, email, team) {
     console.log("insertRows users");
     var stmt = db.prepare("INSERT INTO users VALUES (?,?,?,?)");
-
     stmt.run(first_name, last_name, email, team);
-    
-
 }
