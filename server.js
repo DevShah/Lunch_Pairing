@@ -16,6 +16,9 @@ http.createServer(function (req, res) {
         var body = '';
         req.on('data', function (data) {
             var json = JSON.parse(data.toString())
+            if(json.method == 'insert_User'){
+                insert_User(json.params[0],json.params[1],json.params[2],json.params[3])
+            }
             console.log(json);
         });
         res.writeHead(200, {'Content-Type': 'text/plain'});
@@ -51,6 +54,6 @@ function delete_User(email) {
 }
 
 function calculate_new_pairing(){
-    
+
 }
 
