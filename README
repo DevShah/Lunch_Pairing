@@ -1,2 +1,5 @@
-Backend - RAILS
+Backend - Node
 SQLITE3
+
+Install SQLITE3 Node Framework
+npm install --sqlite=/usr/local
