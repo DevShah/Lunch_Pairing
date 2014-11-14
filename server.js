@@ -19,7 +19,7 @@ http.createServer(function (req, res) {
         req.on('data', function (data) {
             var json = JSON.parse(data.toString())
             if(json.method == 'insert_user'){
-                insert_User(json.params[0],json.params[1],json.params[2],json.params[3])
+                insert_user(json.params[0],json.params[1],json.params[2],json.params[3])
                 console.log(db.run("select * from users;"))
             }
             else if(json.method == 'deactivate_user'){
@@ -30,7 +30,7 @@ http.createServer(function (req, res) {
             }
             else if(json.method == 'show_all_users'){
                 db.all("select * from users;",function show_all_users(err, all){
-                    res.writeHead(200, {'Content-Type': 'text/plain'});
+                    res.writeHead(200, {'Content-Type': 'text/plain', 'Access-Control-Allow-Origin': '*'});
                     res.write(JSON.stringify(all))
                     res.end()
                 });
@@ -39,7 +39,7 @@ http.createServer(function (req, res) {
                 date = moment().day(1).format('YYYYMMDD')
                 db_event.all("SELECT * from events where date = (?)", date,
                     function show_current_week_pairing(err, all){
-                        res.writeHead(200, {'Content-Type': 'text/plain'});
+                        res.writeHead(200, {'Content-Type': 'text/plain', 'Access-Control-Allow-Origin': '*'});
                         res.write(JSON.stringify(all))
                         res.end()
                 });
@@ -50,7 +50,7 @@ http.createServer(function (req, res) {
             else if(json.method == 'show_all_weeks_pairings'){
                 db_event.all("SELECT * from events",
                     function show_current_week_pairing(err, all){
-                        res.writeHead(200, {'Content-Type': 'text/plain'});
+                        res.writeHead(200, {'Content-Type': 'text/plain', 'Access-Control-Allow-Origin': '*'});
                         res.write(JSON.stringify(all))
                         res.end()
                 });
@@ -60,7 +60,7 @@ http.createServer(function (req, res) {
 
     }
     else{
-      res.writeHead(200, {'Content-Type': 'text/plain'});
+      res.writeHead(200, {'Content-Type': 'text/plain', 'Access-Control-Allow-Origin': '*'});
       res.end("Get Request");
     }
 }).listen(9615);
@@ -118,13 +118,51 @@ function calculate_new_pairing(){
     db_event.each("SELECT email from users",
             function blah(err, all){
                 var email = all.email
-                db_event.run("SELECT date from events where email1=(y) OR email2=(y);", function(err,data){
-                    
+                db_event.run("SELECT date from events where email1=(y) OR email2=(y);", all, all, function(err,data){
+                    var pair_email = null;
+                    if(data != null){
+                        pair_email = get_email(all);
+                        if(pair_email != null){
+                            var stmt = db_event.prepare("INSERT into events VALUES (?,?,?,?,?);");
+                            stmt.run(date, all.email, pair_email, "Lunch", "No_photo");
+                        }
+                        else{
+                            var stmt = db_event.prepare("INSERT into events VALUES (?,?,?,?,?);");
+                            stmt.run(date, all.email, "None This Week", "Lunch", "No_photo");
+                        }
+                    }                    
                 });
-
             });
 
 }
 
-
+function get_least_paired(current_user_email)
+{   
+    simple_hash = {}
+    db.each("Select email from users", function(e, a){
+        simple_hash[a] = 0
+    });
+    db_event.each("SELECT email1,email2 from events where email1=(y) OR email2=(y);" , current_user_email, current_user_email,
+        function(err, stuff)
+            console.log(stuff);
+            a = stuff.split('|');
+            email1 = a[0];
+            email2 = a[1];
+            if(email1 == current_user_email){
+                simple_hash[email2] = simple_hash[email2] + 1;
+            }
+            else{
+                simple_hash[email1] = simple_hash[email1] + 1;
+            }
+        });
+    var min = 10000;
+    var return_email = null;
+    for (var emails in simple_hash){
+        if(simple_hash[emails] < min){
+            min = simple_hash[emails];
+            return_email = names;
+        }
+    }
+    return return_email;
+}
 
