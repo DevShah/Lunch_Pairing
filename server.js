@@ -47,6 +47,10 @@ http.createServer(function (req, res) {
             else if(json.method == 'calculate_new_pairing') {
                 calculate_new_pairing()
             }
+            else if(json.method == 'update_photo') {
+                var stmt = db.prepare("UPDATE events SET photo=(?) where email1 = (?) or email2 = (?) and date = (?) ;", json.params[0],json.params[1],json.params[1], json.params[2]);
+                stmt.run(email);
+            }
             else if(json.method == 'show_all_weeks_pairings'){
                 db_event.all("SELECT * from events",
                     function show_current_week_pairing(err, all){
