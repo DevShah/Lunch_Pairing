@@ -65,7 +65,8 @@ http.createServer(function (req, res) {
     }
 }).listen(9615);
 
- the_interval = 24 * 7 * 60 * 60 * 1000;
+//the_interval = 24 * 7 * 60 * 60 * 1000;
+the_interval = 60 * 1000;
 setInterval(function() {
   console.log("One week update lunches");
   calculate_new_pairing()
