@@ -144,7 +144,7 @@ function get_least_paired(current_user_email)
         simple_hash[a] = 0
     });
     db_event.each("SELECT email1,email2 from events where email1=(y) OR email2=(y);" , current_user_email, current_user_email,
-        function(err, stuff)
+        function(err, stuff){
             console.log(stuff);
             a = stuff.split('|');
             email1 = a[0];
