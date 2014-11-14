@@ -66,7 +66,7 @@ http.createServer(function (req, res) {
 }).listen(9615);
 
 //the_interval = 24 * 7 * 60 * 60 * 1000;
-the_interval = 60 * 1000;
+the_interval = 5 * 1000;
 setInterval(function() {
   console.log("One week update lunches");
   calculate_new_pairing()
@@ -116,13 +116,15 @@ function activate_user(email) {
 function calculate_new_pairing(){
 
     var date = moment().format('YYYYMMDD')
-    db_event.each("SELECT email from users",
+    db.each("SELECT email from users",
             function blah(err, all){
                 var email = all.email
                 db_event.run("SELECT date from events where email1=(y) OR email2=(y);", all, all, function(err,data){
                     var pair_email = null;
-                    if(data != null){
-                        pair_email = get_email(all);
+                    
+                    if(data == null){
+                        pair_email = get_least_paired(all);
+                        //console.log(pair_email);
                         if(pair_email != null){
                             var stmt = db_event.prepare("INSERT into events VALUES (?,?,?,?,?);");
                             stmt.run(date, all.email, pair_email, "Lunch", "No_photo");
@@ -131,6 +133,9 @@ function calculate_new_pairing(){
                             var stmt = db_event.prepare("INSERT into events VALUES (?,?,?,?,?);");
                             stmt.run(date, all.email, "None This Week", "Lunch", "No_photo");
                         }
+                    }
+                    else{
+                        console.log("There is already a pairing for this week")
                     }                    
                 });
             });
@@ -140,30 +145,47 @@ function calculate_new_pairing(){
 function get_least_paired(current_user_email)
 {   
     simple_hash = {}
-    db.each("Select email from users", function(e, a){
-        simple_hash[a] = 0
+    db.all("select email from users;", function(e, a){
+        for(var x in a){
+            if(a[x].email != current_user_email.email){
+                simple_hash[a[x].email] = 0;
+            }
+        }
+        return finish_calculations(simple_hash, current_user_email);
     });
-    db_event.each("SELECT email1,email2 from events where email1=(y) OR email2=(y);" , current_user_email, current_user_email,
+    
+}
+
+function finish_calculations(simple_hash, current_user_email){
+    db_event.all("SELECT email1,email2 from events where email1=(y) OR email2=(y);" , current_user_email.email, current_user_email.email,
         function(err, stuff){
-            console.log(stuff);
-            a = stuff.split('|');
-            email1 = a[0];
-            email2 = a[1];
-            if(email1 == current_user_email){
-                simple_hash[email2] = simple_hash[email2] + 1;
+            if(stuff != null){
+                a = stuff.split('|');
+                email1 = a[0];
+                email2 = a[1];
+                if(email1 == current_user_email){
+                    simple_hash[email2] = simple_hash[email2] + 1;
+                }
+                else{
+                    simple_hash[email1] = simple_hash[email1] + 1;
+                }
             }
-            else{
-                simple_hash[email1] = simple_hash[email1] + 1;
-            }
+
+            return final_calc(simple_hash, current_user_email)
         });
+}
+
+function final_calc(simple_hash, current_user_email)
+{
     var min = 10000;
     var return_email = null;
     for (var emails in simple_hash){
-        if(simple_hash[emails] < min){
+        if(simple_hash[emails] < min && current_user_email.email != emails){
             min = simple_hash[emails];
-            return_email = names;
+            return_email = emails;
         }
     }
     return return_email;
-}
 
+
+}
