@@ -23,10 +23,10 @@ http.createServer(function (req, res) {
                 console.log(db.run("select * from users;"))
             }
             else if(json.method == 'deactivate_user'){
-                deactivate_user(json.params[2])
+                deactivate_user(json.params[0])
             }
             else if(json.method == 'activate_user'){
-                activate_user(json.params[2])
+                activate_user(json.params[0])
             }
             else if(json.method == 'show_all_users'){
                 db.all("select * from users;",function show_all_users(err, all){
