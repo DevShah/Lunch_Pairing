@@ -118,8 +118,8 @@ function calculate_new_pairing(){
     db_event.each("SELECT email from users",
             function blah(err, all){
                 var email = all.email
-                db.run("SELECT date from events where email1=(y) OR email2=(y);", function(err,data){
-                    if()
+                db_event.run("SELECT date from events where email1=(y) OR email2=(y);", function(err,data){
+                    
                 });
 
             });
