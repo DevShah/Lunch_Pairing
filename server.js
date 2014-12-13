@@ -46,8 +46,6 @@ http.createServer(function (req, res) {
         req.on('data', function (data) {
             var json = JSON.parse(data.toString())
             if(json.method == 'insert_user'){
-                // insert_user(json.params[0],json.params[1],json.params[2],json.params[3])
-                // console.log(db.run("select * from users;"))
                 var new_user = new User({
                     'first_name': json.params[0],
                     'last_name': json.params[1],
@@ -141,9 +139,6 @@ setInterval(function() {
   calculate_new_pairing()
 }, the_interval);
 
-var MongoClient = require('mongodb').MongoClient
-  , assert = require('assert');
-
 // // Use connect method to connect to the Server
 // MongoClient.connect(url, function(err, db) {
 //   assert.equal(null, err);
@@ -169,17 +164,15 @@ var MongoClient = require('mongodb').MongoClient
 
 
 
-/*
-    Insert user into the database
+// /*
+//     Insert user into the database
 
-*/
-function insert_user(first_name, last_name, email, team) {
-    console.log("insertRows users");
-    
-    
-    var stmt = db.prepare("INSERT INTO users VALUES (?,?,?,?,?)");
-    stmt.run(first_name, last_name, email, team, 1);
-}
+// */
+// function insert_user(first_name, last_name, email, team) {
+//     console.log("insertRows users");
+//     var stmt = db.prepare("INSERT INTO users VALUES (?,?,?,?,?)");
+//     stmt.run(first_name, last_name, email, team, 1);
+// }
 
 
 /*
@@ -331,7 +324,7 @@ function calculate_new_pairing(){
 
     });
 
-   
+}
 
 // function get_least_paired(current_user_email)
 // {   
