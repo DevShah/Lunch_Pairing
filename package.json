@@ -1,0 +1,25 @@
+{
+  "name": "Lunch_Pairing",
+  "version": "1.0.0",
+  "description": "Backend - Node SQLITE3",
+  "main": "server.js",
+  "dependencies": {
+    "moment": "^2.8.4",
+    "mongoose": "^3.8.21"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DevShah/Lunch_Pairing.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/DevShah/Lunch_Pairing/issues"
+  },
+  "homepage": "https://github.com/DevShah/Lunch_Pairing"
+}

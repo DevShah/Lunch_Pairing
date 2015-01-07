@@ -4,4 +4,6 @@ SQLITE3
 Install SQLITE3 Node Framework
 npm install --sqlite=/usr/local
 
-npm install moment --save
+##### Install all dependencies
+`npm install`
+
